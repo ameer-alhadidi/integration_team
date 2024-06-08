@@ -1,0 +1,33 @@
+digraph {
+	123456 [label="Example Entity (MOMP)"]
+	1122 [label="John Doe\nEmail: john.doe@example.com\nNumber: 123-456-7890"]
+	123456 -> 1122
+	1123 [label="Jane Smith\nEmail: jane.smith@example.com\nNumber: 098-765-4321"]
+	123456 -> 1123
+	1 [label="MCTFHQ01WMP01\nIP: 10.1.10.131\nStatus: Active"]
+	123123 [label="Port 8080"]
+	123455 [label=person_information]
+	123123 -> 123455
+	12346 [label=traffic_information]
+	123123 -> 12346
+	11111 [label="example_cert_1\nExpires: 2025-01-01"]
+	123123 -> 11111
+	1 -> 123123
+	123124 [label="Port 8081"]
+	12345 [label=person_information]
+	123124 -> 12345
+	123466 [label=traffic_information]
+	123124 -> 123466
+	111112 [label="example_cert_1\nExpires: 2025-01-01"]
+	123124 -> 111112
+	1 -> 123124
+	123456 -> 1
+	user1 [label="user1\nRoles: admin, user"]
+	user_cert_1 [label="user_cert_1\nExpires: 2024-10-10"]
+	user1 -> user_cert_1
+	123456 -> user1
+	user2 [label="user2\nRoles: user"]
+	user_cert_2 [label="user_cert_2\nExpires: 2024-09-15"]
+	user2 -> user_cert_2
+	123456 -> user2
+}

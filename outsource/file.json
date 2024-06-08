@@ -1,0 +1,99 @@
+[
+  {
+    "id":123456,
+    "name": "Example Entity",
+    "name_arb": "مثال الكيان",
+    "ABBR": "MOMP",
+    "entity_type": "external",
+    "contacts": [
+      {
+        "id":1122,
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "number": "123-456-7890"
+      },
+      {
+        "id":1123,
+        "name": "Jane Smith",
+        "email": "jane.smith@example.com",
+        "number": "098-765-4321"
+      }
+    ],
+    "servers":[
+      {
+        "id":1,
+        "name":"MCTFHQ01WMP01",
+        "ip_address":"10.1.10.131",
+        "nated_ip_address":"10.1.10.131",
+        "status":"Active",
+        "ports": [
+          {
+            "id":123123,
+            "number": "8080",
+            "allowed_service": 
+              [{
+                  "id":12345,
+                  "name" : "person_information"
+                },
+                {
+                  "id":12346,
+                  "name" : "traffic_information"
+                }
+              ],
+            "certificates": [
+              {
+                "id":11111,
+                "name": "example_cert_1",
+                "expiry_date": "2025-01-01"
+              }
+            ]
+          },
+          {
+            "id":123124,
+            "number": "8081",
+            "allowed_service": 
+              [
+                  {
+                  "id":12345,
+                  "name" : "person_information"
+                },
+                {
+                  "id":12346,
+                  "name" : "traffic_information"
+                }
+              ],
+            "certificates": [
+              {
+                "id":11111,
+                "name": "example_cert_1",
+                "expiry_date": "2025-01-01"
+              }
+            ]
+          }
+        ]
+    }
+    ],
+    "user_accounts": [
+      {
+        "name": "user1",
+        "roles": ["admin", "user"],
+        "certificates": [
+          {
+            "name": "user_cert_1",
+            "expiry_date": "2024-10-10"
+          }
+        ]
+      },
+      {
+        "name": "user2",
+        "roles": ["user"],
+        "certificates": [
+          {
+            "name": "user_cert_2",
+            "expiry_date": "2024-09-15"
+          }
+        ]
+      }
+    ]
+  }
+]

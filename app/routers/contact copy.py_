@@ -1,0 +1,47 @@
+from typing import List
+from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+from icecream import ic
+from ..schemas.schemas import Contact,ContactBase
+from ..database import get_db
+from ..models import models
+
+
+
+router = APIRouter(
+    prefix="/contacts",
+    tags=['Contacts']
+) 
+
+@router.get("/",status_code=status.HTTP_200_OK, response_model=List[ContactBase])
+def get_contacts(db: Session = Depends(get_db)):
+    contacts = db.query(models.Contact).all()
+    return contacts # {"data" : contacts}
+
+ 
+@router.post("/",status_code=status.HTTP_201_CREATED, response_model=ContactBase)
+def create_contact(contact: ContactBase,db: Session = Depends(get_db)):
+
+    new_contact=models.Contact(name=contact.name, email=contact.email, mobileNumber=contact.mobileNumber,officeNumber=contact.officeNumber )
+    db.add(new_contact)
+    db.commit()
+    db.refresh(new_contact)
+    return {"data": new_contact}
+
+
+
+@router.put("/{id}", response_model=ContactBase)
+def update_contact(id: int, updated_contact: ContactBase,db: Session = Depends(get_db)):
+
+    contact_query = db.query(models.Contact).filter(models.Contact.id == id)
+    contact = contact_query.first()
+    
+    if contact == None:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND,
+                            detail = f"Contact with this id does not exist {id}")
+     
+    contact_query.update(updated_contact.model_dump(), synchronize_session=False)
+ 
+    db.commit() 
+    return contact_query.first()

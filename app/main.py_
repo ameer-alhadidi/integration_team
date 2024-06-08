@@ -1,0 +1,104 @@
+from fastapi import FastAPI,status,Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from icecream import ic
+
+from fastapi.staticfiles import StaticFiles
+from fastapi.openapi.utils import get_openapi
+from fastapi.openapi.docs import get_swagger_ui_html
+
+from app.fake_data import fake_data
+
+from .core.config import settings
+from .models import models
+from .database import engine
+from .routers import contact, entity, port
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Custom title",
+        version="0.0.2",
+        summary="This is a very custom OpenAPI schema",
+        description="Here's a longer description of the custom **OpenAPI** schema",
+        routes=app.routes,
+         
+    )
+    openapi_schema["info"]["x-logo"] = {
+         
+        "url": "app/static/logo.png",
+        "x-logoWidth": 90,
+        "x-logoHeight": 100
+    }
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+def create_tables():         
+	models.Base.metadata.create_all(bind=engine)
+     
+
+        
+def start_application():
+    app = FastAPI(title=settings.project_name,
+                  version=settings.project_version,docs_url=None)
+    app.mount("/app/static", StaticFiles(directory="app/static"), name="static")
+    create_tables()
+    #create fake data
+    #fake_data()
+
+    return app
+
+ 
+app = start_application()
+
+app.openapi = custom_openapi
+@app.get("/docs", include_in_schema=False)
+async def swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="FastAPI",
+        swagger_favicon_url="app/static/logo.png"
+    )
+# comment the validation code exception 
+# @app.exception_handler(RequestValidationError)
+# async def validation_exception_handler(request: Request, exc: RequestValidationError):
+#     ic(exc)
+#     return JSONResponse(
+#         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+#         content={
+#             "detail": exc.errors(),
+#             "body": exc.body,
+#             "reason": "all errors"
+#         }
+#     )
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(contact.router)
+app.include_router(entity.router)
+app.include_router(port.router)
+
+
+@app.get("/")
+def root():
+    return {"data": "Hello World pushing out to Windows",
+            "status":{
+                "code":"E0000",
+                "desc_arbic":"المعاملة صحيحة",
+                "desc_english": "Valid Transaction"
+            }
+            }
+ 
+

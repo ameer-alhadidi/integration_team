@@ -1,0 +1,71 @@
+from faker import Faker
+from datetime import datetime
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from icecream import ic
+from app.database import get_db
+from .models.models import Entity, Contact, EntityType, Port
+from .core.config import settings
+
+
+def fake_data():
+
+    # Initialize Faker
+    fake = Faker()
+
+    # Create a database connection
+    SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}'
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    # Generate synthetic data for entities
+    num_entities = 30
+    for _ in range(num_entities):
+        entity = Entity(
+            name_en=fake.company(),
+            name_arb=fake.company(),
+            ABBR=fake.company_suffix(),
+            entity_type=fake.random_element(list(EntityType)),
+            created_by=fake.name(),
+            updated_by=fake.name(),
+            created_at=fake.date_time_between(start_date='-1y', end_date='now'),
+            updated_at=fake.date_time_between(start_date='-1y', end_date='now')
+        )
+        session.add(entity)
+
+    # Generate synthetic data for contacts
+    num_contacts = 100
+    for _ in range(num_contacts):
+        contact = Contact(
+            name=fake.name(),
+            email=fake.email(),
+            mobile_number=fake.numerify('########'),
+            office_number=fake.numerify('########'),
+            entity_id=fake.random_int(min=1, max=num_entities),
+            created_by=fake.name(),
+            updated_by=fake.name(),
+            created_at=fake.date_time_between(start_date='-1y', end_date='now'),
+            updated_at=fake.date_time_between(start_date='-1y', end_date='now')
+        )
+        session.add(contact)
+
+    num_ports = 50
+    for _ in range(num_ports):
+        port = Port(
+            number=fake.numerify('####'),
+            service_access=fake.random_element(elements=("TCP", "UDP")),
+            allowed_access=fake.random_element(elements=("Public", "Private")),
+            entity_id=fake.random_int(min=1, max=num_entities),
+            created_by=fake.name(),
+            updated_by=fake.name(),
+            created_at=fake.date_time_between(start_date='-1y', end_date='now'),
+            updated_at=fake.date_time_between(start_date='-1y', end_date='now')
+        )
+        session.add(port)
+    
+
+    # Commit the changes to the database
+    session.commit()
+
+    ic({"Fake Progress": "Completed"})    
